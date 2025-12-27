@@ -2,6 +2,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 const PUBLIC_PATHS = ["/auth/login", "/auth/signup", "/auth/verify"];
+const PUBLIC_API_PATHS = ["/api/cron/cleanup-unverified"];
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -29,6 +30,10 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const pathname = request.nextUrl.pathname;
+
+  if (PUBLIC_API_PATHS.some((path) => pathname.startsWith(path))) {
+    return response;
+  }
   const isPublic = PUBLIC_PATHS.some((path) => pathname.startsWith(path));
 
   if (!user && !isPublic) {
