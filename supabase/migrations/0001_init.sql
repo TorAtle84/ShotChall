@@ -1,4 +1,4 @@
-﻿-- ShotChall initial schema and RLS
+-- ShotChall initial schema and RLS
 
 create extension if not exists "pgcrypto";
 
@@ -390,7 +390,7 @@ on challenge_categories for select
 using (true);
 
 create policy challenge_categories_admin_write
-on challenge_categories for insert, update, delete
+on challenge_categories for all
 using (is_admin())
 with check (is_admin());
 
@@ -399,7 +399,7 @@ on challenge_templates for select
 using (true);
 
 create policy challenge_templates_admin_write
-on challenge_templates for insert, update, delete
+on challenge_templates for all
 using (is_admin())
 with check (is_admin());
 
@@ -607,7 +607,7 @@ on reports for insert
 with check (reporter_id = auth.uid());
 
 create policy report_actions_admin_all
-on report_actions for select, insert, update, delete
+on report_actions for all
 using (is_admin())
 with check (is_admin());
 
@@ -631,3 +631,4 @@ create policy notifications_update_owner
 on notifications for update
 using (user_id = auth.uid() or is_admin())
 with check (user_id = auth.uid() or is_admin());
+
