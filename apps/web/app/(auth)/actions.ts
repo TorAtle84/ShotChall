@@ -19,7 +19,7 @@ export async function signIn(formData: FormData) {
     redirectWithError("/auth/login", "Email and password are required.");
   }
 
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
@@ -66,8 +66,8 @@ export async function signUp(formData: FormData) {
     redirectWithError("/auth/signup", "Username cannot contain spaces.");
   }
 
-  const supabase = createSupabaseServerClient();
-  const origin = headers().get("origin") ?? "";
+  const supabase = await createSupabaseServerClient();
+  const origin = (await headers()).get("origin") ?? "";
   const { error } = await supabase.auth.signUp({
     email,
     password,
@@ -97,7 +97,7 @@ export async function resendVerification(formData: FormData) {
     redirectWithError("/auth/verify", "Provide an email address to resend.");
   }
 
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { error } = await supabase.auth.resend({
     type: "signup",
     email,
