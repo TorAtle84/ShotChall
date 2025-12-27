@@ -2,16 +2,31 @@
 import { NextResponse } from "next/server";
 
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+const VERCEL_CRON_UA_PREFIX = "vercel-cron/";
 
 function isVerified(user: { email_confirmed_at?: string | null; confirmed_at?: string | null }) {
   return Boolean(user.email_confirmed_at || user.confirmed_at);
 }
 
-export async function POST(request: Request) {
+function isAuthorized(request: Request) {
   const secret = process.env.CRON_SECRET;
   const authHeader = request.headers.get("authorization");
+  const userAgent = request.headers.get("user-agent") ?? "";
+  const isVercelCron = userAgent.startsWith(VERCEL_CRON_UA_PREFIX);
 
-  if (secret && authHeader !== `Bearer ${secret}`) {
+  if (!secret) {
+    return true;
+  }
+
+  if (authHeader === `Bearer ${secret}`) {
+    return true;
+  }
+
+  return isVercelCron;
+}
+
+async function handleCleanup(request: Request) {
+  if (!isAuthorized(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -68,4 +83,12 @@ export async function POST(request: Request) {
   }
 
   return NextResponse.json({ deleted, scanned });
+}
+
+export async function POST(request: Request) {
+  return handleCleanup(request);
+}
+
+export async function GET(request: Request) {
+  return handleCleanup(request);
 }

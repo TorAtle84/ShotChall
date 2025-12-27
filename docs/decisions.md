@@ -10,3 +10,4 @@
 - Process Supabase email verification links on `/auth/verify` by exchanging `code`/`token_hash` in a client helper to avoid server cookie mutations.
 - Add admin-only report update/delete policies in a follow-up migration.
 - Exempt the cleanup cron endpoint from auth middleware redirects.
+- Allow Vercel Cron GET requests (user-agent `vercel-cron/*`) for the cleanup job and define the schedule in `apps/web/vercel.json`.
