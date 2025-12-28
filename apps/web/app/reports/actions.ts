@@ -167,6 +167,7 @@ export async function createPictureReport(formData: FormData) {
   const reason = normalizeReason(reasonValue);
   if (!submissionId || !reason) {
     redirectWithStatus("/reports/new", "error", "Submission and reason are required.");
+    return;
   }
 
   const supabase = await createSupabaseServerClient();
@@ -186,10 +187,12 @@ export async function createPictureReport(formData: FormData) {
 
   if (submissionError || !submission) {
     redirectWithStatus("/reports/new", "error", "Submission not found.");
+    return;
   }
 
   if (submission.user_id === user.id) {
     redirectWithStatus("/reports/new", "error", "You cannot report your own submission.");
+    return;
   }
 
   const { data: report, error: reportError } = await supabase
@@ -207,6 +210,7 @@ export async function createPictureReport(formData: FormData) {
 
   if (reportError || !report) {
     redirectWithStatus("/reports/new", "error", reportError?.message || "Unable to submit report.");
+    return;
   }
 
   let emailFailed = false;
@@ -232,6 +236,7 @@ export async function createUserReport(formData: FormData) {
   const reason = normalizeReason(reasonValue);
   if (!reportedUserId || !reason) {
     redirectWithStatus("/reports/new", "error", "Reported user and reason are required.");
+    return;
   }
 
   const supabase = await createSupabaseServerClient();
@@ -245,6 +250,7 @@ export async function createUserReport(formData: FormData) {
 
   if (reportedUserId === user.id) {
     redirectWithStatus("/reports/new", "error", "You cannot report your own account.");
+    return;
   }
 
   const { data: profile, error: profileError } = await supabase
@@ -255,6 +261,7 @@ export async function createUserReport(formData: FormData) {
 
   if (profileError || !profile) {
     redirectWithStatus("/reports/new", "error", "User not found.");
+    return;
   }
 
   const { data: report, error: reportError } = await supabase
@@ -270,6 +277,7 @@ export async function createUserReport(formData: FormData) {
 
   if (reportError || !report) {
     redirectWithStatus("/reports/new", "error", reportError?.message || "Unable to submit report.");
+    return;
   }
 
   let emailFailed = false;
