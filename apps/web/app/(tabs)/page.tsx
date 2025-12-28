@@ -1,6 +1,15 @@
 ﻿import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/lib/data/user";
+import { getUserStreak } from "@/lib/data/daily";
+import DailyChallengeCard from "@/components/DailyChallengeCard";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const user = await getCurrentUser();
+  if (!user) redirect("/auth/login");
+
+  const streak = await getUserStreak(user.id);
+
   return (
     <div className="space-y-8">
       <section className="rounded-[32px] border border-white/70 bg-white/80 p-6 shadow-lg shadow-orange-100/40">
@@ -21,10 +30,10 @@ export default function HomePage() {
             Start a challenge
           </Link>
           <Link
-            href="/arena"
+            href="/challenges"
             className="rounded-2xl border border-white/60 bg-white/80 px-5 py-3 text-sm font-semibold text-[color:var(--color-muted)] transition hover:border-[color:var(--color-accent)]"
           >
-            Explore arena
+            Your challenges
           </Link>
         </div>
       </section>
@@ -32,48 +41,37 @@ export default function HomePage() {
       <section className="grid gap-4 md:grid-cols-3">
         <div className="rounded-3xl border border-white/70 bg-white/70 p-4 shadow-sm">
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--color-muted)]">
-            Active
-          </p>
-          <p className="mt-3 text-2xl font-semibold text-[color:var(--color-foreground)]">0</p>
-          <p className="text-sm text-[color:var(--color-muted)]">Challenges in play</p>
-        </div>
-        <div className="rounded-3xl border border-white/70 bg-white/70 p-4 shadow-sm">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--color-muted)]">
             Streak
           </p>
-          <p className="mt-3 text-2xl font-semibold text-[color:var(--color-foreground)]">0</p>
+          <p className="mt-3 text-2xl font-semibold text-[color:var(--color-foreground)]">
+            {streak > 0 ? `🔥 ${streak}` : "0"}
+          </p>
           <p className="text-sm text-[color:var(--color-muted)]">Days in a row</p>
         </div>
         <div className="rounded-3xl border border-white/70 bg-white/70 p-4 shadow-sm">
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--color-muted)]">
-            Avg rating
+            Welcome
           </p>
-          <p className="mt-3 text-2xl font-semibold text-[color:var(--color-foreground)]">--</p>
-          <p className="text-sm text-[color:var(--color-muted)]">Stars received</p>
+          <p className="mt-3 text-2xl font-semibold text-[color:var(--color-foreground)]">
+            @{user.username}
+          </p>
+          <p className="text-sm text-[color:var(--color-muted)]">Ready to shoot?</p>
+        </div>
+        <div className="rounded-3xl border border-white/70 bg-white/70 p-4 shadow-sm">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--color-muted)]">
+            Friends
+          </p>
+          <Link
+            href="/friends"
+            className="mt-3 block text-2xl font-semibold text-[color:var(--color-accent)] hover:underline"
+          >
+            Find →
+          </Link>
+          <p className="text-sm text-[color:var(--color-muted)]">Add challengers</p>
         </div>
       </section>
 
-      <section className="rounded-[28px] border border-white/70 bg-white/75 p-6 shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--color-muted)]">
-              Daily challenge
-            </p>
-            <h2 className="mt-2 font-display text-2xl text-[color:var(--color-foreground)]">
-              Find a reflection that tells a story.
-            </h2>
-            <p className="mt-2 text-sm text-[color:var(--color-muted)]">
-              Join the public arena and keep your streak alive.
-            </p>
-          </div>
-          <Link
-            href="/arena"
-            className="rounded-2xl border border-white/60 bg-white/80 px-4 py-2 text-sm font-semibold text-[color:var(--color-muted)] transition hover:border-[color:var(--color-accent)]"
-          >
-            Join now
-          </Link>
-        </div>
-      </section>
+      <DailyChallengeCard />
     </div>
   );
 }
