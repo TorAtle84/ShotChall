@@ -7,9 +7,9 @@ import {
 } from "@/lib/data/leaderboards";
 
 type LeaderboardsPageProps = {
-  searchParams?: {
+  searchParams?: Promise<{
     range?: string;
-  };
+  }>;
 };
 
 const rangeOptions = [
@@ -34,7 +34,8 @@ export default async function PublicLeaderboardsPage({
     redirect("/auth/login");
   }
 
-  const range = parseLeaderboardRange(searchParams?.range);
+  const params = await searchParams;
+  const range = parseLeaderboardRange(params?.range);
   const publicRows = await getPublicChallengeLeaderboard(range);
 
   return (
@@ -56,11 +57,10 @@ export default async function PublicLeaderboardsPage({
               <Link
                 key={option.value}
                 href={`/leaderboards/public?range=${option.value}`}
-                className={`rounded-full px-4 py-2 text-xs font-semibold transition ${
-                  isActive
+                className={`rounded-full px-4 py-2 text-xs font-semibold transition ${isActive
                     ? "bg-[color:var(--color-accent)] text-white"
                     : "border border-white/60 bg-white/80 text-[color:var(--color-muted)] hover:border-[color:var(--color-accent)]"
-                }`}
+                  }`}
               >
                 {option.label}
               </Link>
