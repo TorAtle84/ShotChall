@@ -137,7 +137,7 @@ export async function warnReport(formData: FormData) {
 
   try {
     await sendEmail({
-      to: userData.user.email,
+      to: userData.user!.email!,
       subject,
       html,
     });
@@ -196,7 +196,7 @@ export async function deleteReportUser(formData: FormData) {
 
   try {
     await sendEmail({
-      to: userData.user.email,
+      to: userData.user!.email!,
       subject,
       html,
     });
