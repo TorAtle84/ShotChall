@@ -1,8 +1,1 @@
-{
-  "crons": [
-    {
-      "path": "/api/cron/cleanup-unverified",
-      "schedule": "0 3 * * *"
-    }
-  ]
-}
+{}
