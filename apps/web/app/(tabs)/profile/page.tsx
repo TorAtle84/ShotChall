@@ -1,7 +1,16 @@
 ﻿import Link from "next/link";
+import { redirect } from "next/navigation";
 import LogoutButton from "@/components/LogoutButton";
+import InviteFriends from "@/components/InviteFriends";
+import { getCurrentUser, maskEmail } from "@/lib/data/user";
 
-export default function ProfilePage() {
+export default async function ProfilePage() {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    redirect("/auth/login");
+  }
+
   return (
     <div className="space-y-6">
       <header className="flex flex-wrap items-center justify-between gap-4">
@@ -25,17 +34,34 @@ export default function ProfilePage() {
       </header>
 
       <section className="rounded-[28px] border border-white/70 bg-white/80 p-6 shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--color-muted)]">
-              Username
-            </p>
-            <h2 className="font-display text-2xl text-[color:var(--color-foreground)]">
-              shotlover
-            </h2>
-            <p className="text-sm text-[color:var(--color-muted)]">
-              Public challenger: Off
-            </p>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="space-y-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--color-muted)]">
+                Username
+              </p>
+              <h2 className="font-display text-2xl text-[color:var(--color-foreground)]">
+                {user.username}
+              </h2>
+            </div>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--color-muted)]">
+                Email
+              </p>
+              <p className="text-sm text-[color:var(--color-foreground)]">
+                {maskEmail(user.email)}
+              </p>
+            </div>
+            {user.city && user.country && (
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--color-muted)]">
+                  Location
+                </p>
+                <p className="text-sm text-[color:var(--color-foreground)]">
+                  {user.city}, {user.country}
+                </p>
+              </div>
+            )}
           </div>
           <button
             type="button"
@@ -66,6 +92,8 @@ export default function ProfilePage() {
           <p className="mt-3 text-2xl font-semibold text-[color:var(--color-foreground)]">0</p>
         </div>
       </section>
+
+      <InviteFriends userId={user.id} username={user.username} />
     </div>
   );
 }
