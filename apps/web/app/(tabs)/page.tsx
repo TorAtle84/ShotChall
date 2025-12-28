@@ -35,6 +35,12 @@ export default async function HomePage() {
           >
             Your challenges
           </Link>
+          <Link
+            href="/leaderboards"
+            className="rounded-2xl border border-white/60 bg-white/80 px-5 py-3 text-sm font-semibold text-[color:var(--color-muted)] transition hover:border-[color:var(--color-accent)]"
+          >
+            Leaderboards
+          </Link>
         </div>
       </section>
 
