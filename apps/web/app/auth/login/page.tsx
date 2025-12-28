@@ -2,13 +2,14 @@
 import { signIn } from "../actions";
 
 type LoginPageProps = {
-  searchParams?: { error?: string; email?: string };
+  searchParams: Promise<{ error?: string; email?: string }>;
 };
 
-export default function LoginPage({ searchParams }: LoginPageProps) {
+export default async function LoginPage({ searchParams }: LoginPageProps) {
+  const params = await searchParams;
   const errorMessage =
-    typeof searchParams?.error === "string" ? searchParams.error : "";
-  const email = typeof searchParams?.email === "string" ? searchParams.email : "";
+    typeof params?.error === "string" ? params.error : "";
+  const email = typeof params?.email === "string" ? params.email : "";
 
   return (
     <div className="space-y-6">

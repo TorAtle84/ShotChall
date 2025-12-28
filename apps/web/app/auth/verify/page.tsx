@@ -3,30 +3,31 @@ import VerifyEmailStatus from "@/components/VerifyEmailStatus";
 import { resendVerification } from "../actions";
 
 type VerifyPageProps = {
-  searchParams?: {
+  searchParams: Promise<{
     error?: string;
     email?: string;
     sent?: string;
     code?: string;
     token_hash?: string;
     type?: string;
-  };
+  }>;
 };
 
-export default function VerifyPage({ searchParams }: VerifyPageProps) {
+export default async function VerifyPage({ searchParams }: VerifyPageProps) {
+  const params = await searchParams;
   const errorMessage =
-    typeof searchParams?.error === "string" ? searchParams.error : "";
+    typeof params?.error === "string" ? params.error : "";
   const email =
-    typeof searchParams?.email === "string" ? searchParams.email : "";
-  const sent = searchParams?.sent === "1";
+    typeof params?.email === "string" ? params.email : "";
+  const sent = params?.sent === "1";
   const code =
-    typeof searchParams?.code === "string" ? searchParams.code : undefined;
+    typeof params?.code === "string" ? params.code : undefined;
   const tokenHash =
-    typeof searchParams?.token_hash === "string"
-      ? searchParams.token_hash
+    typeof params?.token_hash === "string"
+      ? params.token_hash
       : undefined;
   const type =
-    typeof searchParams?.type === "string" ? searchParams.type : undefined;
+    typeof params?.type === "string" ? params.type : undefined;
 
   return (
     <div className="space-y-6">

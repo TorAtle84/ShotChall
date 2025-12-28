@@ -3,12 +3,13 @@ import TimezoneField from "@/components/TimezoneField";
 import { signUp } from "../actions";
 
 type SignupPageProps = {
-  searchParams?: { error?: string };
+  searchParams: Promise<{ error?: string }>;
 };
 
-export default function SignupPage({ searchParams }: SignupPageProps) {
+export default async function SignupPage({ searchParams }: SignupPageProps) {
+  const params = await searchParams;
   const errorMessage =
-    typeof searchParams?.error === "string" ? searchParams.error : "";
+    typeof params?.error === "string" ? params.error : "";
 
   return (
     <div className="space-y-6">
