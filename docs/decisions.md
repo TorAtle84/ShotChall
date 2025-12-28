@@ -12,3 +12,4 @@
 - Exempt the cleanup cron endpoint from auth middleware redirects.
 - Allow Vercel Cron GET requests (user-agent `vercel-cron/*`) for the cleanup job and define the schedule in `apps/web/vercel.json`.
 - Send moderation emails via Resend using `RESEND_API_KEY` and `EMAIL_FROM` env vars.
+- Compute Milestone 5 leaderboards and stats server-side (service role) and derive streaks from `challenges.daily_date`.

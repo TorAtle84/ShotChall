@@ -1,8 +1,10 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import LogoutButton from "@/components/LogoutButton";
 import InviteFriends from "@/components/InviteFriends";
+import BadgePill from "@/components/BadgePill";
 import { getCurrentUser } from "@/lib/data/user";
+import { getUserStats } from "@/lib/data/stats";
 
 export default async function ProfilePage() {
   const user = await getCurrentUser();
@@ -10,6 +12,10 @@ export default async function ProfilePage() {
   if (!user) {
     redirect("/auth/login");
   }
+
+  const stats = await getUserStats(user.id);
+  const avgStars =
+    stats.avgStars === null ? "--" : stats.avgStars.toFixed(1);
 
   return (
     <div className="space-y-6">
@@ -77,19 +83,34 @@ export default async function ProfilePage() {
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--color-muted)]">
             Wins
           </p>
-          <p className="mt-3 text-2xl font-semibold text-[color:var(--color-foreground)]">0</p>
+          <p className="mt-3 text-2xl font-semibold text-[color:var(--color-foreground)]">
+            {stats.wins}
+          </p>
         </div>
         <div className="rounded-3xl border border-white/70 bg-white/70 p-4 shadow-sm">
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--color-muted)]">
             Avg stars
           </p>
-          <p className="mt-3 text-2xl font-semibold text-[color:var(--color-foreground)]">--</p>
+          <p className="mt-3 text-2xl font-semibold text-[color:var(--color-foreground)]">
+            {avgStars}
+          </p>
         </div>
         <div className="rounded-3xl border border-white/70 bg-white/70 p-4 shadow-sm">
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--color-muted)]">
-            Streak
+            Daily streak
           </p>
-          <p className="mt-3 text-2xl font-semibold text-[color:var(--color-foreground)]">0</p>
+          <p className="mt-3 text-2xl font-semibold text-[color:var(--color-foreground)]">
+            {stats.streak}
+          </p>
+          <div className="mt-3">
+            {stats.badge ? (
+              <BadgePill tier={stats.badge} streak={stats.streak} />
+            ) : (
+              <p className="text-xs text-[color:var(--color-muted)]">
+                Earn Bronze at 7 days.
+              </p>
+            )}
+          </div>
         </div>
       </section>
 

@@ -5,6 +5,7 @@ import { getChallenge } from "@/lib/data/challenges";
 import { getSubmissions, getWinner } from "@/lib/data/submissions";
 import SubmissionCard from "@/components/challenges/SubmissionCard";
 import EndChallengeButton from "@/components/challenges/EndChallengeButton";
+import PhotoSubmit from "@/components/challenges/PhotoSubmit";
 
 type Props = {
     params: Promise<{ id: string }>;
@@ -116,14 +117,9 @@ export default async function ChallengeDetailPage({ params }: Props) {
                 )}
             </section>
 
-            <div className="flex gap-3">
+            <div className="space-y-4">
                 {isActive && !isChallenger && (
-                    <button
-                        type="button"
-                        className="rounded-2xl bg-[color:var(--color-accent)] px-5 py-3 text-sm font-semibold text-white shadow-md shadow-orange-200/60"
-                    >
-                        Submit Photo
-                    </button>
+                    <PhotoSubmit challengeId={id} userId={user.id} />
                 )}
                 {isActive && isChallenger && (
                     <EndChallengeButton challengeId={id} />

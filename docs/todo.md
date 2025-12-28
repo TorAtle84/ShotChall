@@ -5,3 +5,4 @@
 - Configure the Vercel cron (GET) via `apps/web/vercel.json` for `/api/cron/cleanup-unverified`.
 - Promote at least one admin account by setting `profile_private.is_admin = true`.
 - Validate auth flow end-to-end (signup -> verify link -> login).
+- Seed or tag daily challenges so streak badges can be exercised.
