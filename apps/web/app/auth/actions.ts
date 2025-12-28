@@ -5,6 +5,12 @@ import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { validatePassword } from "@/lib/validators/auth";
 
+export async function signOut() {
+  const supabase = await createSupabaseServerClient();
+  await supabase.auth.signOut();
+  redirect("/auth/login");
+}
+
 function redirectWithError(path: string, message: string) {
   const separator = path.includes("?") ? "&" : "?";
   const url = `${path}${separator}error=${encodeURIComponent(message)}`;

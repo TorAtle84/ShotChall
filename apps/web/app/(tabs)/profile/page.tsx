@@ -1,4 +1,5 @@
 ﻿import Link from "next/link";
+import LogoutButton from "@/components/LogoutButton";
 
 export default function ProfilePage() {
   return (
@@ -12,12 +13,15 @@ export default function ProfilePage() {
             Keep your public challenger status and stats visible.
           </p>
         </div>
-        <Link
-          href="/settings"
-          className="rounded-2xl border border-white/60 bg-white/80 px-4 py-2 text-sm font-semibold text-[color:var(--color-muted)]"
-        >
-          Settings
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/settings"
+            className="rounded-2xl border border-white/60 bg-white/80 px-4 py-2 text-sm font-semibold text-[color:var(--color-muted)]"
+          >
+            Settings
+          </Link>
+          <LogoutButton />
+        </div>
       </header>
 
       <section className="rounded-[28px] border border-white/70 bg-white/80 p-6 shadow-sm">
