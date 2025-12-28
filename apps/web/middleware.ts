@@ -1,60 +1,35 @@
-﻿import { createServerClient } from "@supabase/ssr";
-import { NextResponse, type NextRequest } from "next/server";
+﻿import { NextResponse, type NextRequest } from "next/server";
 
 const PUBLIC_PATHS = ["/auth/login", "/auth/signup", "/auth/verify"];
 const PUBLIC_API_PATHS = ["/api/cron/cleanup-unverified"];
 
 export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({ request });
-
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
-    {
-      cookies: {
-        get(name) {
-          return request.cookies.get(name)?.value;
-        },
-        set(name, value, options) {
-          response.cookies.set({ name, value, ...options });
-        },
-        remove(name, options) {
-          response.cookies.set({ name, value: "", ...options });
-        },
-      },
-    }
-  );
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
   const pathname = request.nextUrl.pathname;
 
+  // Allow public API paths
   if (PUBLIC_API_PATHS.some((path) => pathname.startsWith(path))) {
-    return response;
+    return NextResponse.next();
   }
+
   const isPublic = PUBLIC_PATHS.some((path) => pathname.startsWith(path));
 
-  if (!user && !isPublic) {
+  // Check for Supabase auth cookie (sb-*-auth-token)
+  const cookies = request.cookies.getAll();
+  const hasAuthCookie = cookies.some(
+    (cookie) => cookie.name.includes("-auth-token") && cookie.value
+  );
+
+  // If no auth cookie and not a public path, redirect to login
+  if (!hasAuthCookie && !isPublic) {
     const loginUrl = request.nextUrl.clone();
     loginUrl.pathname = "/auth/login";
     loginUrl.searchParams.set("error", "Please sign in to continue.");
     return NextResponse.redirect(loginUrl);
   }
 
-  if (user && !user.email_confirmed_at && !pathname.startsWith("/auth/verify")) {
-    const verifyUrl = request.nextUrl.clone();
-    verifyUrl.pathname = "/auth/verify";
-    if (user.email) {
-      verifyUrl.searchParams.set("email", user.email);
-    }
-    return NextResponse.redirect(verifyUrl);
-  }
-
+  // If has auth cookie and trying to access login/signup, redirect to home
   if (
-    user &&
-    user.email_confirmed_at &&
+    hasAuthCookie &&
     (pathname.startsWith("/auth/login") || pathname.startsWith("/auth/signup"))
   ) {
     const homeUrl = request.nextUrl.clone();
@@ -62,9 +37,10 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(homeUrl);
   }
 
-  return response;
+  return NextResponse.next();
 }
 
 export const config = {
   matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };
+
