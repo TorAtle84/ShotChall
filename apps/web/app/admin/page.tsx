@@ -5,13 +5,13 @@ import { getFlaggedWords, REPORT_REASON_LABELS } from "@/lib/reporting";
 import { warnReport, deleteReportUser } from "./actions";
 
 type AdminPageProps = {
-  searchParams?: {
+  searchParams?: Promise<{
     success?: string;
     error?: string;
     message?: string;
     action?: string;
     report?: string;
-  };
+  }>;
 };
 
 type ReportRow = {
@@ -99,12 +99,13 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
     })
   );
 
+  const params = await searchParams;
   const successMessage =
-    searchParams?.success === "1"
-      ? searchParams?.message || "Action completed."
+    params?.success === "1"
+      ? params?.message || "Action completed."
       : "";
   const errorMessage =
-    searchParams?.error === "1" ? searchParams?.message || "Action failed." : "";
+    params?.error === "1" ? params?.message || "Action failed." : "";
 
   return (
     <div className="space-y-8">
@@ -141,7 +142,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
           {reportsWithImages.map((report) => {
             const reasonLabel =
               REPORT_REASON_LABELS[
-                report.reason as keyof typeof REPORT_REASON_LABELS
+              report.reason as keyof typeof REPORT_REASON_LABELS
               ] ?? report.reason;
             const flaggedWords = getFlaggedWords(report.details);
             const statusLabel =
