@@ -2,34 +2,35 @@ import { createPictureReport, createUserReport } from "../actions";
 import { REPORT_REASONS, REPORT_REASON_LABELS } from "@/lib/reporting";
 
 type ReportPageProps = {
-  searchParams?: {
+  searchParams?: Promise<{
     submission_id?: string;
     reported_user_id?: string;
     success?: string;
     error?: string;
     message?: string;
     email?: string;
-  };
+  }>;
 };
 
-export default function ReportPage({ searchParams }: ReportPageProps) {
+export default async function ReportPage({ searchParams }: ReportPageProps) {
+  const params = await searchParams;
   const submissionId =
-    typeof searchParams?.submission_id === "string"
-      ? searchParams.submission_id
+    typeof params?.submission_id === "string"
+      ? params.submission_id
       : "";
   const reportedUserId =
-    typeof searchParams?.reported_user_id === "string"
-      ? searchParams.reported_user_id
+    typeof params?.reported_user_id === "string"
+      ? params.reported_user_id
       : "";
   const successMessage =
-    searchParams?.success === "1"
-      ? searchParams.message || "Report submitted."
+    params?.success === "1"
+      ? params.message || "Report submitted."
       : "";
   const errorMessage =
-    searchParams?.error === "1"
-      ? searchParams.message || "Unable to submit report."
+    params?.error === "1"
+      ? params.message || "Unable to submit report."
       : "";
-  const emailFailed = searchParams?.email === "failed";
+  const emailFailed = params?.email === "failed";
 
   return (
     <div className="space-y-8">
