@@ -72,7 +72,7 @@ async function loadReport(service: ReturnType<typeof createSupabaseServiceClient
     throw new Error("Report not found.");
   }
 
-  return data as ReportDetail;
+  return data as unknown as ReportDetail;
 }
 
 function buildWarningEmail(report: ReportDetail) {
