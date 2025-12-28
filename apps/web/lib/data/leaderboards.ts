@@ -80,24 +80,30 @@ export async function getFriendLeaderboard(
   const service = createSupabaseServiceClient();
   const since = getRangeStart(range);
 
-  const { data: challenges } = await service
-    .from("challenges")
-    .select("id")
-    .eq("visibility", "private")
-    .eq("status", "ended")
-    .gte("end_at", since);
+  const { data: friendSubmissions } = await service
+    .from("submissions")
+    .select("challenge_id, challenge:challenges!inner(visibility, status, end_at)")
+    .in("user_id", friendIds)
+    .eq("challenges.visibility", "private")
+    .eq("challenges.status", "ended")
+    .gte("challenges.end_at", since);
 
-  if (!challenges || challenges.length === 0) {
+  const challengeIds = Array.from(
+    new Set(
+      (friendSubmissions ?? [])
+        .map((submission) => submission.challenge_id)
+        .filter((value): value is string => Boolean(value))
+    )
+  );
+
+  if (challengeIds.length === 0) {
     return [];
   }
-
-  const challengeIds = challenges.map((challenge) => challenge.id);
 
   const { data: submissions } = await service
     .from("submissions")
     .select("id, challenge_id, user_id, created_at")
-    .in("challenge_id", challengeIds)
-    .in("user_id", friendIds);
+    .in("challenge_id", challengeIds);
 
   if (!submissions || submissions.length === 0) {
     return [];

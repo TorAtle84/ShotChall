@@ -146,7 +146,7 @@ export default async function LeaderboardsPage({
                     {row.title}
                   </p>
                   <p className="text-xs text-[color:var(--color-muted)]">
-                    {row.submissionCount} photos · Avg {formatAvgStars(row.avgStars)} stars
+                    {row.submissionCount} photos | Avg {formatAvgStars(row.avgStars)} stars
                   </p>
                 </div>
               </div>
