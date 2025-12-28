@@ -77,7 +77,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
     throw new Error(error.message);
   }
 
-  const reports = (data ?? []) as ReportRow[];
+  const reports = (data ?? []) as unknown as ReportRow[];
 
   const service = createSupabaseServiceClient();
   const reportsWithImages = await Promise.all(
