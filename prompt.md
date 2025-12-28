@@ -132,6 +132,7 @@ Notifications allowed but not spammy.
   - A user can block another user only if they have previously reported (â€œ!â€) a picture from that user.
 - Auto-detection of banned words in report text: nude/naked/kill/etc. (basic keyword scan).
 - Admin email: flytlink.app@gmail.com (from Vercel env).
+- Moderation emails are sent via Resend (set `RESEND_API_KEY` + `EMAIL_FROM` in Vercel env).
 - Reporting pipeline:
   - When report submitted:
     - create DB record

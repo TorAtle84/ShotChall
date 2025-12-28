@@ -11,3 +11,4 @@
 - Add admin-only report update/delete policies in a follow-up migration.
 - Exempt the cleanup cron endpoint from auth middleware redirects.
 - Allow Vercel Cron GET requests (user-agent `vercel-cron/*`) for the cleanup job and define the schedule in `apps/web/vercel.json`.
+- Send moderation emails via Resend using `RESEND_API_KEY` and `EMAIL_FROM` env vars.

@@ -1,6 +1,26 @@
 ﻿import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/lib/data/user";
+import { getMyChallenges, getReceivedChallenges } from "@/lib/data/challenges";
+import ChallengeCard from "@/components/challenges/ChallengeCard";
 
-export default function ChallengesPage() {
+export default async function ChallengesPage() {
+  const user = await getCurrentUser();
+  if (!user) redirect("/auth/login");
+
+  const [myChallenges, receivedChallenges] = await Promise.all([
+    getMyChallenges(),
+    getReceivedChallenges(),
+  ]);
+
+  const pendingChallenges = receivedChallenges.filter(
+    (c) => c.status === "active"
+  );
+  const activeChallenges = myChallenges.filter((c) => c.status === "active");
+  const endedChallenges = [...myChallenges, ...receivedChallenges].filter(
+    (c) => c.status === "ended"
+  );
+
   return (
     <div className="space-y-6">
       <header className="flex flex-wrap items-center justify-between gap-4">
@@ -20,26 +40,54 @@ export default function ChallengesPage() {
         </Link>
       </header>
 
-      <section className="grid gap-4">
-        {["Awaiting your shot", "Rating in progress", "Winner announced"].map(
-          (label) => (
-            <div
-              key={label}
-              className="rounded-3xl border border-white/70 bg-white/80 p-5 shadow-sm"
-            >
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--color-muted)]">
-                {label}
-              </p>
-              <h2 className="mt-3 font-display text-xl text-[color:var(--color-foreground)]">
-                Golden hour portrait
-              </h2>
-              <p className="mt-2 text-sm text-[color:var(--color-muted)]">
-                Ends in 6h - 3 participants
-              </p>
-            </div>
-          )
+      {pendingChallenges.length > 0 && (
+        <section className="space-y-4">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--color-muted)]">
+            Invites ({pendingChallenges.length})
+          </h2>
+          <div className="grid gap-4">
+            {pendingChallenges.map((challenge) => (
+              <ChallengeCard
+                key={challenge.id}
+                challenge={challenge}
+                showAccept
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
+      <section className="space-y-4">
+        <h2 className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--color-muted)]">
+          Active Challenges ({activeChallenges.length})
+        </h2>
+        {activeChallenges.length === 0 ? (
+          <div className="rounded-3xl border border-white/70 bg-white/80 p-6 text-center shadow-sm">
+            <p className="text-sm text-[color:var(--color-muted)]">
+              No active challenges. Create one to get started!
+            </p>
+          </div>
+        ) : (
+          <div className="grid gap-4">
+            {activeChallenges.map((challenge) => (
+              <ChallengeCard key={challenge.id} challenge={challenge} />
+            ))}
+          </div>
         )}
       </section>
+
+      {endedChallenges.length > 0 && (
+        <section className="space-y-4">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--color-muted)]">
+            Completed ({endedChallenges.length})
+          </h2>
+          <div className="grid gap-4">
+            {endedChallenges.slice(0, 5).map((challenge) => (
+              <ChallengeCard key={challenge.id} challenge={challenge} />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }
