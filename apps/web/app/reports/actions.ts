@@ -76,9 +76,20 @@ function buildAdminReportEmail(payload: AdminEmailPayload) {
   return { subject, html };
 }
 
+type ReportQueryResult = {
+  id: string;
+  reason: string;
+  details: string | null;
+  created_at: string;
+  reporter: { username: string | null; display_name: string | null } | null;
+  reported: { username: string | null; display_name: string | null } | null;
+  submission: { id: string; image_path: string | null; image_thumb_path: string | null } | null;
+  challenge: { id: string; prompt_text: string | null } | null;
+};
+
 async function notifyAdmin(reportId: string) {
   const service = createSupabaseServiceClient();
-  const { data: report, error } = await service
+  const { data, error } = await service
     .from("reports")
     .select(
       `
@@ -97,9 +108,11 @@ async function notifyAdmin(reportId: string) {
     .eq("id", reportId)
     .single();
 
-  if (error || !report) {
+  if (error || !data) {
     throw new Error("Unable to load report details.");
   }
+
+  const report = data as unknown as ReportQueryResult;
 
   let signedImageUrl: string | null = null;
   const imagePath = report.submission?.image_thumb_path || report.submission?.image_path;
