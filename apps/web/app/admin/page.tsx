@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseServiceClient } from "@/lib/supabase/service";
 import { getFlaggedWords, REPORT_REASON_LABELS } from "@/lib/reporting";
 import { warnReport, deleteReportUser } from "./actions";
 
@@ -78,6 +79,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 
   const reports = (data ?? []) as ReportRow[];
 
+  const service = createSupabaseServiceClient();
   const reportsWithImages = await Promise.all(
     reports.map(async (report) => {
       const path = report.submission?.image_thumb_path || report.submission?.image_path;
@@ -85,7 +87,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
         return { ...report, signedUrl: "" };
       }
 
-      const { data: signed, error: signedError } = await supabase.storage
+      const { data: signed, error: signedError } = await service.storage
         .from(SUBMISSIONS_BUCKET)
         .createSignedUrl(path, 60 * 60);
 
