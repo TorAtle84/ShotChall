@@ -28,13 +28,14 @@ const navItems = [
     ),
   },
   {
-    href: "/arena",
-    label: "Arena",
+    href: "/friends",
+    label: "Friends",
     icon: (
       <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <path d="M4 12h16" />
-        <path d="M12 4v16" />
-        <circle cx="12" cy="12" r="7" />
+        <circle cx="9" cy="7" r="3" />
+        <path d="M3 19c1.5-3 3.5-5 6-5s4.5 2 6 5" />
+        <circle cx="17" cy="9" r="2.5" />
+        <path d="M15 19c.8-2 2-3.5 4-3.5" />
       </svg>
     ),
   },
@@ -63,11 +64,10 @@ export default function BottomNav() {
               key={item.href}
               href={item.href}
               aria-current={isActive ? "page" : undefined}
-              className={`flex flex-col items-center gap-1 text-xs font-semibold transition ${
-                isActive
+              className={`flex flex-col items-center gap-1 text-xs font-semibold transition ${isActive
                   ? "text-[color:var(--color-accent-strong)]"
                   : "text-[color:var(--color-muted)] hover:text-[color:var(--color-accent)]"
-              }`}
+                }`}
             >
               {item.icon}
               <span>{item.label}</span>
@@ -82,11 +82,10 @@ export default function BottomNav() {
               key={item.href}
               href={item.href}
               aria-current={isActive ? "page" : undefined}
-              className={`flex flex-col items-center gap-1 text-xs font-semibold transition ${
-                isActive
+              className={`flex flex-col items-center gap-1 text-xs font-semibold transition ${isActive
                   ? "text-[color:var(--color-accent-strong)]"
                   : "text-[color:var(--color-muted)] hover:text-[color:var(--color-accent)]"
-              }`}
+                }`}
             >
               {item.icon}
               <span>{item.label}</span>

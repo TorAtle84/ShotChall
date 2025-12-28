@@ -10,6 +10,8 @@ export type CurrentUser = {
     timezone?: string;
     emailVerified: boolean;
     createdAt: string;
+    isPublic: boolean;
+    isPublicChallenger: boolean;
 };
 
 export async function getCurrentUser(): Promise<CurrentUser | null> {
@@ -24,18 +26,27 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
         return null;
     }
 
+    // Get profile data for visibility settings
+    const { data: profile } = await supabase
+        .from("profiles")
+        .select("is_public, is_public_challenger, username, display_name")
+        .eq("id", user.id)
+        .single();
+
     const metadata = user.user_metadata || {};
 
     return {
         id: user.id,
         email: user.email ?? "",
-        username: metadata.username ?? metadata.display_name ?? "anonymous",
-        displayName: metadata.display_name ?? metadata.username ?? "Anonymous",
+        username: profile?.username ?? metadata.username ?? "anonymous",
+        displayName: profile?.display_name ?? metadata.display_name ?? "Anonymous",
         country: metadata.country,
         city: metadata.city,
         timezone: metadata.timezone,
         emailVerified: !!user.email_confirmed_at,
         createdAt: user.created_at,
+        isPublic: profile?.is_public ?? false,
+        isPublicChallenger: profile?.is_public_challenger ?? false,
     };
 }
 
