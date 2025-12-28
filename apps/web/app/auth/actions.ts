@@ -78,7 +78,7 @@ export async function signUp(formData: FormData) {
     email,
     password,
     options: {
-      emailRedirectTo: origin ? `${origin}/auth/verify` : undefined,
+      emailRedirectTo: origin ? `${origin}/auth/callback` : undefined,
       data: {
         username,
         display_name: username,
