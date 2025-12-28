@@ -2,7 +2,7 @@
 import { redirect } from "next/navigation";
 import LogoutButton from "@/components/LogoutButton";
 import InviteFriends from "@/components/InviteFriends";
-import { getCurrentUser, maskEmail } from "@/lib/data/user";
+import { getCurrentUser } from "@/lib/data/user";
 
 export default async function ProfilePage() {
   const user = await getCurrentUser();
@@ -49,7 +49,7 @@ export default async function ProfilePage() {
                 Email
               </p>
               <p className="text-sm text-[color:var(--color-foreground)]">
-                {maskEmail(user.email)}
+                {user.email}
               </p>
             </div>
             {user.city && user.country && (
