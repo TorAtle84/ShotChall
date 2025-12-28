@@ -2,6 +2,9 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/data/user";
 import { getChallenge } from "@/lib/data/challenges";
+import { getSubmissions, getWinner } from "@/lib/data/submissions";
+import SubmissionCard from "@/components/challenges/SubmissionCard";
+import EndChallengeButton from "@/components/challenges/EndChallengeButton";
 
 type Props = {
     params: Promise<{ id: string }>;
@@ -15,10 +18,15 @@ export default async function ChallengeDetailPage({ params }: Props) {
     const challenge = await getChallenge(id);
     if (!challenge) notFound();
 
+    const submissions = await getSubmissions(id);
+    const winner = challenge.status === "ended" ? await getWinner(id) : null;
+
     const prompt = challenge.promptText || "Photo Challenge";
     const endAt = challenge.endAt ? new Date(challenge.endAt) : null;
     const isActive = challenge.status === "active";
     const isEnded = challenge.status === "ended";
+    const isPublic = challenge.visibility === "public";
+    const isChallenger = challenge.challengerId === user.id;
 
     return (
         <div className="space-y-6">
@@ -37,7 +45,7 @@ export default async function ChallengeDetailPage({ params }: Props) {
                         }`}>
                         {challenge.status}
                     </span>
-                    <span>{challenge.visibility === "public" ? "Public" : "Private"}</span>
+                    <span>{isPublic ? "Public" : "Private"}</span>
                     {challenge.challengerUsername && (
                         <span>by @{challenge.challengerUsername}</span>
                     )}
@@ -86,25 +94,41 @@ export default async function ChallengeDetailPage({ params }: Props) {
 
             <section className="space-y-4">
                 <h2 className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--color-muted)]">
-                    Submissions
+                    Submissions ({submissions.length})
                 </h2>
-                <div className="rounded-3xl border border-white/70 bg-white/80 p-6 text-center shadow-sm">
-                    <p className="text-sm text-[color:var(--color-muted)]">
-                        No submissions yet. Be the first to submit!
-                    </p>
-                </div>
+                {submissions.length === 0 ? (
+                    <div className="rounded-3xl border border-white/70 bg-white/80 p-6 text-center shadow-sm">
+                        <p className="text-sm text-[color:var(--color-muted)]">
+                            No submissions yet. Be the first to submit!
+                        </p>
+                    </div>
+                ) : (
+                    <div className="grid gap-4 md:grid-cols-2">
+                        {submissions.map((submission) => (
+                            <SubmissionCard
+                                key={submission.id}
+                                submission={submission}
+                                isPublic={isPublic}
+                                isWinner={winner?.id === submission.id}
+                            />
+                        ))}
+                    </div>
+                )}
             </section>
 
-            {isActive && challenge.challengerId !== user.id && (
-                <div className="flex gap-3">
+            <div className="flex gap-3">
+                {isActive && !isChallenger && (
                     <button
                         type="button"
                         className="rounded-2xl bg-[color:var(--color-accent)] px-5 py-3 text-sm font-semibold text-white shadow-md shadow-orange-200/60"
                     >
                         Submit Photo
                     </button>
-                </div>
-            )}
+                )}
+                {isActive && isChallenger && (
+                    <EndChallengeButton challengeId={id} />
+                )}
+            </div>
         </div>
     );
 }
